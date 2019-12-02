@@ -28,13 +28,13 @@ fn main() -> Result<(), Box<Error>>  {
 
     let solution = match day {
         1 => solution::DAY1,
-        _ => panic!("day not implemented"),
+        _ => panic!("No solution implemented for given day {}", day),
     };
 
     match part {
         1 => println!("{}", solution.part_1()),
         2 => println!("{}", solution.part_2()),
-        _ => panic!("illegal part specified. Must be in [1, 2]"),
+        _ => panic!("Illegal part number specified '{}'. Must be '1' or '2'", part),
     };
 
     Ok(())
