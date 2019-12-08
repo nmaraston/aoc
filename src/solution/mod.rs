@@ -4,5 +4,13 @@ pub trait Solution {
 }
 
 pub mod day1;
+pub mod day2;
 
-pub const DAY1: day1::Day1Solve = day1::Day1Solve {};
+pub fn get_solution(day: u32) -> Box<dyn Solution> {
+    match day {
+        1 => Box::new(day1::Day1Solve {}),
+        2 => Box::new(day2::Day2Solve {}),
+        _ => panic!("No solution implemented for given day {}", day),
+    }
+}
+

@@ -1,7 +1,6 @@
 use clap::{App, Arg, value_t};
 
 mod solution;
-use crate::solution::Solution;
 
 fn main() -> std::io::Result<()>  {
     let pkg_version = env!("CARGO_PKG_VERSION");
@@ -29,10 +28,7 @@ fn main() -> std::io::Result<()>  {
     let part = value_t!(app_matches.value_of("PART"), u32).unwrap();
     let input_file = app_matches.value_of("INPUT_FILE").unwrap();
 
-    let solution = match day {
-        1 => solution::DAY1,
-        _ => panic!("No solution implemented for given day {}", day),
-    };
+    let solution = solution::get_solution(day);
 
     match part {
         1 => println!("{}", solution.part_1(&input_file)?),
