@@ -21,14 +21,14 @@ impl Solution for Day2Solve {
          * examine the first two op instructions in the input file). Therefore, we can regard the
          * following two statements as true and leverage them to prune some pairs:
          * 
-         *     1. Since the computed as in part 1 is less then the answer in part 2 we can skip all
-         *        pairs where noun < 12 and verb <= 2.
-         *     2. If v1 <= v2 and compute(noun, v1) > 19690720 then compute(noun, v2) >
+         *     1. Since the answer computed in part 1 is less then the answer in part 2 we can skip
+         *        all pairs where noun < 12 and verb <= 2.
+         *     2. If v1 <= v2 and compute(noun, v1) > 19690720 then compute(noun, v2) >=
          *        compute(noun, v1) > 19690720 thus we can prune pairs for (noun, v) where v > v1.
          */
         let mut result = 0;
-        for noun in 12..99 {
-            for verb in 3..99 {
+        for noun in 12..100 {
+            for verb in 3..100 {
                 let mut mem_copy = memory.clone();
                 let sub_res = compute(noun, verb, &mut mem_copy);
                 if sub_res == 19690720 {
@@ -49,7 +49,7 @@ impl Solution for Day2Solve {
 }
 
 /**
- * Run the Intcode programming as documented. Return 0 if a (noun, verb) input pair causes a index
+ * Run the Intcode program as documented. Return 0 if a (noun, verb) input pair will cause a index
  * out of bounds error.
  */
 fn compute(noun: u32, verb: u32, memory: &mut Vec<u32>) -> u32 {
