@@ -9,11 +9,12 @@ impl Solution for Day2Solve {
     fn part_1(&self, input_file_path: &str) -> std::io::Result<String> {
         let mut memory = read_ints(input_file_path)?;
         let result = compute(12, 2, &mut memory);
+
         Ok(result.to_string())
     }
 
     fn part_2(&self, input_file_path: &str) -> std::io::Result<String> {
-        let mut memory = read_ints(input_file_path)?;
+        let memory = read_ints(input_file_path)?;
 
         /*
          * Search through (noun, verb) pairs to find the answer.
@@ -21,18 +22,18 @@ impl Solution for Day2Solve {
          * examine the first two op instructions in the input file). Therefore, we can regard the
          * following two statements as true and leverage them to prune some pairs:
          * 
-         *     1. Since the answer computed in part 1 is less then the answer in part 2 we can skip
-         *        all pairs where noun < 12 and verb <= 2.
-         *     2. If v1 <= v2 and compute(noun, v1) > 19690720 then compute(noun, v2) >=
-         *        compute(noun, v1) > 19690720 thus we can prune pairs for (noun, v) where v > v1.
+         *   1. Since the answer computed in part 1 is less then the answer in part 2 we can skip
+         *      all pairs where noun < 12 and verb <= 2.
+         *   2. If v1 <= v2 and compute(noun, v1) > 19690720 then compute(noun, v2) >=
+         *      compute(noun, v1) > 19690720 thus we can prune pairs for (noun, v) where v > v1.
          */
         let mut result = 0;
         for noun in 12..100 {
             for verb in 3..100 {
-                let mut mem_copy = memory.clone();
-                let sub_res = compute(noun, verb, &mut mem_copy);
+                let sub_res = compute(noun, verb, &mut memory.clone());
                 if sub_res == 19690720 {
                     result = (100 * noun) + verb;
+                    break;
                 } else if sub_res == 0 || sub_res > 19690720 {
                     break;
                 }
