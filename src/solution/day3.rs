@@ -46,10 +46,8 @@ impl Solution for Day3Solve {
                         min_path_dist = min(min_path_dist, path_dist);
                     }
                 }
-
                 wire2_path_dist += line2.len();
             }
-
             wire1_path_dist += line1.len();
             wire2_path_dist = 0;
         }
