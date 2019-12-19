@@ -1,20 +1,20 @@
-use std::fs;
-
 use crate::solution::Solution;
+use super::intcode;
 
 pub struct Day2Solve {}
 
 impl Solution for Day2Solve {
 
     fn part_1(&self, input_file_path: &str) -> std::io::Result<String> {
-        let mut memory = read_ints(input_file_path)?;
-        let result = compute(12, 2, &mut memory);
-
+        let mut intcode_computer = intcode::Computer::from_file(input_file_path)?;
+        let result = intcode_computer.run(12, 2).unwrap();
+        intcode_computer.reset();
         Ok(result.to_string())
     }
 
     fn part_2(&self, input_file_path: &str) -> std::io::Result<String> {
-        let memory = read_ints(input_file_path)?;
+        let mut intcode_computer = intcode::Computer::from_file(input_file_path)?;
+        let answer = 19690720;
 
         /*
          * Search through (noun, verb) pairs to find the answer.
@@ -30,12 +30,18 @@ impl Solution for Day2Solve {
         let mut result = 0;
         for noun in 12..100 {
             for verb in 3..100 {
-                let sub_res = compute(noun, verb, &mut memory.clone());
-                if sub_res == 19690720 {
-                    result = (100 * noun) + verb;
-                    break;
-                } else if sub_res == 0 || sub_res > 19690720 {
-                    break;
+                let sub_res = intcode_computer.run(noun, verb);
+                intcode_computer.reset();
+
+                // If the result is an Err simply continue in the case where invalid input causes
+                // a invalid IntCode program
+                if let Ok(r) = sub_res {
+                    if r == answer {
+                        result = (100 * noun) + verb;
+                        break;
+                    } else if r == 0 || r > answer {
+                        break;
+                    }
                 }
             }
 
@@ -47,47 +53,5 @@ impl Solution for Day2Solve {
         
         Ok(result.to_string())
     }
-}
-
-/**
- * Run the Intcode program as documented. Return 0 if a (noun, verb) input pair will cause a index
- * out of bounds error.
- */
-fn compute(noun: u32, verb: u32, memory: &mut Vec<u32>) -> u32 {
-
-    memory[1] = noun;
-    memory[2] = verb;
-    
-    let mut instr_ptr: usize = 0;
-
-    while memory[instr_ptr] != 99 {
-        let op1_register = memory[instr_ptr + 1] as usize;
-        let op2_register = memory[instr_ptr + 2] as usize;
-        let register = memory[instr_ptr + 3] as usize;
-
-        memory[register] = match memory[instr_ptr] {
-            1 => memory[op1_register] + memory[op2_register],
-            2 => memory[op1_register] * memory[op2_register],
-            _ => panic!("Unknown op code found.")
-        };
-
-        instr_ptr += 4;
-
-        if instr_ptr >= memory.len() {
-            return 0;
-        }
-    }
-
-    memory[0]
-}
-
-
-fn read_ints(input_file_path: &str) -> std::io::Result<Vec<u32>> {
-    let ints: Vec<u32> = fs::read_to_string(input_file_path)?
-        .trim()
-        .split(",")
-        .map(|s| s.parse::<u32>().unwrap())
-        .collect();
-    Ok(ints)
 }
 
