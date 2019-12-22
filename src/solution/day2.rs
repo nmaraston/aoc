@@ -1,19 +1,35 @@
+use std::fs;
+
 use crate::solution::Solution;
-use super::intcode;
+use super::intcode::Computer;
 
 pub struct Day2Solve {}
 
 impl Solution for Day2Solve {
 
     fn part_1(&self, input_file_path: &str) -> std::io::Result<String> {
-        let mut intcode_computer = intcode::Computer::from_file(input_file_path)?;
-        let result = intcode_computer.run(12, 2).unwrap();
-        intcode_computer.reset();
+        let program = load_program(input_file_path)?; 
+
+        // Dummy input/output device handlers to satisfy generalized Intcode spec in day 5
+        let input_device = || 0;
+        let mut output_device = |val| println!("{}", val);
+
+        let mut computer = Computer::new(&input_device, &mut output_device, program);
+        computer.set_noun(12);
+        computer.set_verb(2);
+        computer.run().unwrap();
+        let result = computer.mem_read(0).unwrap();
         Ok(result.to_string())
     }
 
     fn part_2(&self, input_file_path: &str) -> std::io::Result<String> {
-        let mut intcode_computer = intcode::Computer::from_file(input_file_path)?;
+        let program = load_program(input_file_path)?; 
+
+        // Dummy input/output device handlers to satisfy generalized Intcode spec in day 5
+        let input_device = || 0;
+        let mut output_device = |val| println!("{}", val);
+
+        let mut computer = Computer::new(&input_device, &mut output_device, program);
         let answer = 19690720;
 
         /*
@@ -30,16 +46,20 @@ impl Solution for Day2Solve {
         let mut result = 0;
         for noun in 12..100 {
             for verb in 3..100 {
-                let sub_res = intcode_computer.run(noun, verb);
-                intcode_computer.reset();
 
-                // If the result is an Err simply continue in the case where invalid input causes
-                // a invalid IntCode program
-                if let Ok(r) = sub_res {
-                    if r == answer {
+                computer.set_noun(noun);
+                computer.set_verb(verb);
+                let run_result = computer.run();
+                let sub_res = computer.mem_read(0).unwrap();
+                computer.reset();
+
+                // If the result is an Err simply continue in the case where some input causes a
+                // invalid IntCode program
+                if let Ok(_) = run_result {
+                    if sub_res == answer {
                         result = (100 * noun) + verb;
                         break;
-                    } else if r == 0 || r > answer {
+                    } else if sub_res == 0 || sub_res > answer {
                         break;
                     }
                 }
@@ -53,5 +73,15 @@ impl Solution for Day2Solve {
         
         Ok(result.to_string())
     }
+}
+
+fn load_program(file_path: &str) -> std::io::Result<Vec<i32>> {
+    let program = fs::read_to_string(file_path)?
+        .trim()
+        .split(",")
+        .map(|s| s.parse::<i32>().unwrap())
+        .collect();
+
+    Ok(program)
 }
 

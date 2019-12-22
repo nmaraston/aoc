@@ -1,6 +1,5 @@
 use std::error::Error;
 use std::fmt;
-use std::fs;
 
 #[derive(Debug)]
 pub struct ICError {
@@ -27,36 +26,40 @@ impl Error for ICError {
 
 type ICResult<T> = std::result::Result<T, ICError>;
 
+enum Param {
+    POSITION(usize),
+    IMMEDIATE(i32)
+}
+
 enum Instr {
     HALT,
-    ADD { op1_reg: usize, op2_reg: usize, res_reg: usize },
-    MULT { op1_reg: usize, op2_reg: usize, res_reg: usize },
+    ADD(Param, Param, usize),
+    MULT(Param, Param, usize),
+    INPUT(usize),
+    OUTPUT(Param),
 }
 
-
-pub struct Computer {
-    program: Vec<u32>,
-    memory: Vec<u32>,
-    instr_ptr: usize
+pub struct Computer<'a> {
+    program: Vec<i32>,
+    memory: Vec<i32>,
+    instr_ptr: usize,
+    input_device: &'a dyn Fn() -> i32,
+    output_device: &'a mut dyn FnMut(i32),
 }
 
-impl Computer {
+impl<'a> Computer<'a> {
 
-    pub fn new(program: Vec<u32>) -> Computer {
-        Computer {
+    pub fn new(
+        input_device: &'a dyn Fn() -> i32,
+        output_device: &'a mut dyn FnMut(i32),
+        program: Vec<i32>) -> Self {
+        Self {
             memory: program.clone(),
             program: program,
-            instr_ptr: 0
+            instr_ptr: 0,
+            input_device: input_device,
+            output_device: output_device,
         }
-    }
-
-    pub fn from_file(file_path: &str) -> std::io::Result<Computer> {
-        let program: Vec<u32> = fs::read_to_string(file_path)?
-            .trim()
-            .split(",")
-            .map(|s| s.parse::<u32>().unwrap())
-            .collect();
-        Ok(Computer::new(program))
     }
 
     pub fn reset(&mut self) {
@@ -64,49 +67,100 @@ impl Computer {
         self.memory = self.program.clone();
     }
 
-    pub fn run(&mut self, noun: u32, verb: u32) -> ICResult<u32> {
-        self.mem_set(1, noun)?;
-        self.mem_set(2, verb)?;
+    pub fn set_noun(&mut self, noun: i32) {
+        self.mem_set(1, noun).unwrap();
+    }
 
+    pub fn set_verb(&mut self, verb: i32) {
+        self.mem_set(2, verb).unwrap();
+    }
+
+    pub fn run(&mut self) -> ICResult<()> {
         loop {
             match self.next_instr()? {
-                Instr::ADD { op1_reg, op2_reg, res_reg } => {
-                    let op1 = self.mem_read(op1_reg)?;
-                    let op2 = self.mem_read(op2_reg)?;
-                    self.mem_set(res_reg, op1 + op2)?;
+                Instr::ADD(param1, param2, reg) => {
+                    let arg1 = self.read_param_arg(param1)?;
+                    let arg2 = self.read_param_arg(param2)?;
+                    let res = arg1 + arg2;
+                    self.mem_set(reg, res)?
                 },
-                Instr::MULT { op1_reg, op2_reg, res_reg } => {
-                    let op1 = self.mem_read(op1_reg)?;
-                    let op2 = self.mem_read(op2_reg)?;
-                    self.mem_set(res_reg, op1 * op2)?;
+                Instr::MULT(param1, param2, reg) => {
+                    let arg1 = self.read_param_arg(param1)?;
+                    let arg2 = self.read_param_arg(param2)?;
+                    let res = arg1 * arg2;
+                    self.mem_set(reg, res)?
                 },
-                Instr::HALT => break
+                Instr::INPUT(reg) => {
+                    let input = (self.input_device)();
+                    self.mem_set(reg, input)?
+                },
+                Instr::OUTPUT(param) => {
+                    let arg = self.read_param_arg(param)?;
+                    (self.output_device)(arg);
+                },
+                Instr::HALT => break,
             }
         }
-
-        Ok(self.mem_read(0)?)
+        
+        Ok(())
     }
 
     fn next_instr(&mut self) -> ICResult<Instr> {
-        let instr = match self.mem_read(self.instr_ptr)? {
-            99 => Instr::HALT,
-            val => {
-                let op1_reg = self.mem_read(self.instr_ptr + 1)? as usize;
-                let op2_reg = self.mem_read(self.instr_ptr + 2)? as usize;
-                let res_reg = self.mem_read(self.instr_ptr + 3)? as usize;
+        let instr_code = self.mem_read(self.instr_ptr)?;
+        let instr = match instr_code % 100 {
+            1 => {
+                let param1 = self.read_param(instr_code, 1)?; 
+                let param2 = self.read_param(instr_code, 2)?; 
+                let reg = self.mem_read(self.instr_ptr + 3)? as usize; 
                 self.instr_ptr += 4;
-                match val {
-                    1 => Instr::ADD { op1_reg, op2_reg, res_reg },
-                    2 => Instr::MULT { op1_reg, op2_reg, res_reg },
-                    _ => panic!("Unknown op code found.")
-                }
-            }
+                Instr::ADD(param1, param2, reg)
+            },
+            2 => {
+                let param1 = self.read_param(instr_code, 1)?; 
+                let param2 = self.read_param(instr_code, 2)?; 
+                let reg = self.mem_read(self.instr_ptr + 3)? as usize; 
+                self.instr_ptr += 4;
+                Instr::MULT(param1, param2, reg)
+            },
+            3 => {
+                let reg = self.mem_read(self.instr_ptr + 1)? as usize; 
+                self.instr_ptr += 2;
+                Instr::INPUT(reg)
+            },
+            4 => {
+                let param = self.read_param(instr_code, 1)?; 
+                self.instr_ptr += 2;
+                Instr::OUTPUT(param)
+            },
+            99 => Instr::HALT,
+            _ => panic!("Unknown op code found."),
         };
 
         Ok(instr)
     }
 
-    fn mem_set(&mut self, index: usize, val: u32) -> ICResult<()> {
+    fn read_param(&self, instr_code: i32, param_number: usize) -> ICResult<Param> {
+        let mode = (instr_code / (100 * 10_i32.pow(param_number as u32 - 1))) % 10;
+        let val = self.mem_read(self.instr_ptr + param_number)?;
+        let param = match mode {
+            0 => Param::POSITION(val as usize),
+            1 => Param::IMMEDIATE(val),
+            _ => panic!("Unknown param mode found."),
+        };
+
+        Ok(param)
+    }
+
+    fn read_param_arg(&self, param: Param) -> ICResult<i32> {
+        let result = match param {
+            Param::POSITION(val) => self.mem_read(val as usize)?,
+            Param::IMMEDIATE(val) => val,
+        };
+
+        Ok(result)
+    }
+
+    fn mem_set(&mut self, index: usize, val: i32) -> ICResult<()> {
         if index < self.memory.len() {
             self.memory[index] = val;
             Ok(())
@@ -115,7 +169,7 @@ impl Computer {
         }
     }
 
-    fn mem_read(&self, index: usize) -> ICResult<u32> {
+    pub fn mem_read(&self, index: usize) -> ICResult<i32> {
         if index < self.memory.len() {
             Ok(self.memory[index])
         } else {
