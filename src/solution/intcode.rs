@@ -32,11 +32,15 @@ enum Param {
 }
 
 enum Instr {
-    HALT,
-    ADD(Param, Param, usize),
-    MULT(Param, Param, usize),
-    INPUT(usize),
-    OUTPUT(Param),
+    Halt,
+    Add(Param, Param, usize),
+    Mult(Param, Param, usize),
+    Input(usize),
+    Output(Param),
+    JumpIfTrue(Param, Param),
+    JumpIfFalse(Param, Param),
+    LessThan(Param, Param, usize),
+    Equals(Param, Param, usize),
 }
 
 pub struct Computer<'a> {
@@ -78,27 +82,53 @@ impl<'a> Computer<'a> {
     pub fn run(&mut self) -> ICResult<()> {
         loop {
             match self.next_instr()? {
-                Instr::ADD(param1, param2, reg) => {
+                Instr::Add(param1, param2, reg) => {
                     let arg1 = self.read_param_arg(param1)?;
                     let arg2 = self.read_param_arg(param2)?;
                     let res = arg1 + arg2;
-                    self.mem_set(reg, res)?
+                    self.mem_set(reg, res)?;
                 },
-                Instr::MULT(param1, param2, reg) => {
+                Instr::Mult(param1, param2, reg) => {
                     let arg1 = self.read_param_arg(param1)?;
                     let arg2 = self.read_param_arg(param2)?;
                     let res = arg1 * arg2;
-                    self.mem_set(reg, res)?
+                    self.mem_set(reg, res)?;
                 },
-                Instr::INPUT(reg) => {
+                Instr::Input(reg) => {
                     let input = (self.input_device)();
-                    self.mem_set(reg, input)?
+                    self.mem_set(reg, input)?;
                 },
-                Instr::OUTPUT(param) => {
+                Instr::Output(param) => {
                     let arg = self.read_param_arg(param)?;
                     (self.output_device)(arg);
                 },
-                Instr::HALT => break,
+                Instr::JumpIfTrue(param1, param2) => {
+                    let arg1 = self.read_param_arg(param1)?;
+                    let arg2 = self.read_param_arg(param2)?;
+                    if arg1 != 0 {
+                        self.instr_ptr = arg2 as usize;
+                    }
+                },
+                Instr::JumpIfFalse(param1, param2) => {
+                    let arg1 = self.read_param_arg(param1)?;
+                    let arg2 = self.read_param_arg(param2)?;
+                    if arg1 == 0 {
+                        self.instr_ptr = arg2 as usize;
+                    }
+                },
+                Instr::LessThan(param1, param2, reg) => {
+                    let arg1 = self.read_param_arg(param1)?;
+                    let arg2 = self.read_param_arg(param2)?;
+                    let res = if arg1 < arg2 { 1 } else { 0 };
+                    self.mem_set(reg, res)?;
+                },
+                Instr::Equals(param1, param2, reg) => {
+                    let arg1 = self.read_param_arg(param1)?;
+                    let arg2 = self.read_param_arg(param2)?;
+                    let res = if arg1 == arg2 { 1 } else { 0 };
+                    self.mem_set(reg, res)?;
+                },
+                Instr::Halt => break,
             }
         }
         
@@ -113,26 +143,52 @@ impl<'a> Computer<'a> {
                 let param2 = self.read_param(instr_code, 2)?; 
                 let reg = self.mem_read(self.instr_ptr + 3)? as usize; 
                 self.instr_ptr += 4;
-                Instr::ADD(param1, param2, reg)
+                Instr::Add(param1, param2, reg)
             },
             2 => {
                 let param1 = self.read_param(instr_code, 1)?; 
                 let param2 = self.read_param(instr_code, 2)?; 
                 let reg = self.mem_read(self.instr_ptr + 3)? as usize; 
                 self.instr_ptr += 4;
-                Instr::MULT(param1, param2, reg)
+                Instr::Mult(param1, param2, reg)
             },
             3 => {
                 let reg = self.mem_read(self.instr_ptr + 1)? as usize; 
                 self.instr_ptr += 2;
-                Instr::INPUT(reg)
+                Instr::Input(reg)
             },
             4 => {
                 let param = self.read_param(instr_code, 1)?; 
                 self.instr_ptr += 2;
-                Instr::OUTPUT(param)
+                Instr::Output(param)
             },
-            99 => Instr::HALT,
+            5 => {
+                let param1 = self.read_param(instr_code, 1)?;
+                let param2 = self.read_param(instr_code, 2)?;
+                self.instr_ptr += 3;
+                Instr::JumpIfTrue(param1, param2)
+            },
+            6 => {
+                let param1 = self.read_param(instr_code, 1)?;
+                let param2 = self.read_param(instr_code, 2)?;
+                self.instr_ptr += 3;
+                Instr::JumpIfFalse(param1, param2)
+            },
+            7 => {
+                let param1 = self.read_param(instr_code, 1)?;
+                let param2 = self.read_param(instr_code, 2)?;
+                let reg = self.mem_read(self.instr_ptr + 3)? as usize; 
+                self.instr_ptr += 4;
+                Instr::LessThan(param1, param2, reg)
+            },
+            8 => {
+                let param1 = self.read_param(instr_code, 1)?;
+                let param2 = self.read_param(instr_code, 2)?;
+                let reg = self.mem_read(self.instr_ptr + 3)? as usize; 
+                self.instr_ptr += 4;
+                Instr::Equals(param1, param2, reg)
+            },
+            99 => Instr::Halt,
             _ => panic!("Unknown op code found."),
         };
 
