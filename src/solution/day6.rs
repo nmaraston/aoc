@@ -21,7 +21,7 @@ impl Solution for Day6Solve {
         let orbit_parents = orbit_parents(&orbits);
         let orbit_children = orbit_children(&orbits);
         let distance = min_distance(&orbit_parents, &orbit_children, "YOU", "SAN")
-            .expect("No path exists between 'YOU' and 'SAN'");
+            .expect("No path exists between 'YOU' and 'SAN' for given input");
         let min_orbital_transfers = distance - 2;
         Ok(min_orbital_transfers.to_string())
     }

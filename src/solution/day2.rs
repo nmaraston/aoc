@@ -11,10 +11,10 @@ impl Solution for Day2Solve {
         let program = load_program(input_file_path)?; 
 
         // Dummy input/output device handlers to satisfy generalized Intcode spec in day 5
-        let input_device = || 0;
+        let mut input_device = || 0;
         let mut output_device = |val| println!("{}", val);
 
-        let mut computer = Computer::new(&input_device, &mut output_device, program);
+        let mut computer = Computer::new(&mut input_device, &mut output_device, program);
         computer.set_noun(12);
         computer.set_verb(2);
         computer.run().unwrap();
@@ -26,10 +26,10 @@ impl Solution for Day2Solve {
         let program = load_program(input_file_path)?; 
 
         // Dummy input/output device handlers to satisfy generalized Intcode spec in day 5
-        let input_device = || 0;
+        let mut input_device = || 0;
         let mut output_device = |val| println!("{}", val);
 
-        let mut computer = Computer::new(&input_device, &mut output_device, program);
+        let mut computer = Computer::new(&mut input_device, &mut output_device, program);
         let answer = 19690720;
 
         /*

@@ -47,14 +47,14 @@ pub struct Computer<'a> {
     program: Vec<i32>,
     memory: Vec<i32>,
     instr_ptr: usize,
-    input_device: &'a dyn Fn() -> i32,
+    input_device: &'a mut dyn FnMut() -> i32,
     output_device: &'a mut dyn FnMut(i32),
 }
 
 impl<'a> Computer<'a> {
 
     pub fn new(
-        input_device: &'a dyn Fn() -> i32,
+        input_device: &'a mut dyn FnMut() -> i32,
         output_device: &'a mut dyn FnMut(i32),
         program: Vec<i32>) -> Self {
         Self {

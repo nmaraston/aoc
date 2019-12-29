@@ -24,11 +24,11 @@ fn run_program(program_file: &str, input: i32) -> std::io::Result<String> {
         .map(|s| s.parse::<i32>().unwrap())
         .collect();
 
-    let input_device = || input;
+    let mut input_device = || input;
     let mut outputs = Vec::new();
     let mut output_device = |val| outputs.push(val); // Store outputs in local Vec
 
-    let mut intcode_computer = Computer::new(&input_device, &mut output_device, program);
+    let mut intcode_computer = Computer::new(&mut input_device, &mut output_device, program);
     intcode_computer.run().unwrap();
 
     Ok(outputs.last().unwrap().to_string())

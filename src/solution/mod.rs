@@ -12,6 +12,7 @@ mod day3;
 mod day4;
 mod day5;
 mod day6;
+mod day7;
 
 pub fn get_solution(day: u32) -> Box<dyn Solution> {
     match day {
@@ -21,6 +22,7 @@ pub fn get_solution(day: u32) -> Box<dyn Solution> {
         4 => Box::new(day4::Day4Solve {}),
         5 => Box::new(day5::Day5Solve {}),
         6 => Box::new(day6::Day6Solve {}),
+        7 => Box::new(day7::Day7Solve {}),
         _ => panic!("No solution implemented for given day {}", day),
     }
 }
