@@ -1,2 +1,8 @@
 *.swp
-target
+
+scala/.idea/
+scala/target/
+scala/project/target/
+
+rust/.idea/
+rust/target/
