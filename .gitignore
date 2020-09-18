@@ -1,8 +1,14 @@
 *.swp
 
 scala/.idea/
+scala/.vscode/
 scala/target/
+scala/.metals/
+scala/.bloop/
+scala/.ammonite/
 scala/project/target/
+scala/project/metals.sbt
+scala/project/.bloop/
 
 rust/.idea/
 rust/target/
