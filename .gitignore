@@ -6,6 +6,7 @@
 **/scala/.metals/
 **/scala/.bloop/
 **/scala/.ammonite/
+**/scala/project/project/
 **/scala/project/target/
 **/scala/project/metals.sbt
 **/scala/project/.bloop/
