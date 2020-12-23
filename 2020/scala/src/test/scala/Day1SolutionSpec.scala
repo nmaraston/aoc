@@ -14,7 +14,7 @@ class Day1SolutionSpec extends AnyFlatSpec {
         assert(Ok("514579") == result)
     }
 
-    "(solve) part 1" should "return _ for real puzzle input" in {
+    "(solve) part 1" should "return 913824 for real puzzle input" in {
         val source = Source.fromResource("input/day-1.txt")
         val underTest = new Day1Solution
 
