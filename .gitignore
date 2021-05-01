@@ -11,5 +11,4 @@
 **/scala/project/metals.sbt
 **/scala/project/.bloop/
 
-rust/.idea/
-rust/target/
+**/rust/target/
