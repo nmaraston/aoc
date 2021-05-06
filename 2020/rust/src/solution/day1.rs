@@ -64,7 +64,7 @@ mod tests {
     fn test_part_2() {
         let mut input = "1721\n979\n366\n299\n675\n1456".as_bytes();
         let under_test = Day1Solve {};
-        let result = under_test.part_1(&mut input);
+        let result = under_test.part_2(&mut input);
 
         assert_eq!(result.unwrap(), "241861950");
     }
