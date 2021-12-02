@@ -1,3 +1,5 @@
+mod day1;
+
 use std::io::BufRead;
 
 pub trait Solution {
@@ -7,6 +9,7 @@ pub trait Solution {
 
 pub fn get_solution(day: u32) -> Box<dyn Solution> {
     match day {
+        1 => Box::new(day1::Day1Solution { }),
         _ => panic!("No solution implemented for given day {}", day),
     }
 }
