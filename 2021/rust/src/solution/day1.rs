@@ -29,7 +29,7 @@ impl Solution for Day1Solution {
 
         // Assume len(ints) >= 3
         for i in 2..ints.len() {
-            let curr_sum = ints.get(i-2).unwrap() + ints.get(i-1).unwrap() + ints.get(i).unwrap();
+            let curr_sum = ints[i-2] + ints[i-1] + ints[i];
             if curr_sum > prev_sum {
                 count += 1;
             }
