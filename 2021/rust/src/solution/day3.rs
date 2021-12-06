@@ -72,7 +72,7 @@ fn part_2_search(
         i += 1;
     }
 
-    // Convert Vec of '1's and '0's to unsigned decimal int
+    // Convert Vec of '1's and '0's to unsigned int
     let mut result: u32 = 0;
     for c in &report[candidates[0]] {
         result = result << 1;
