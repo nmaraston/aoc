@@ -1,4 +1,4 @@
-use std::cmp::{max, min};
+use std::cmp::max;
 use std::io::BufRead;
 
 use lazy_static::lazy_static;
