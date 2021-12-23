@@ -62,4 +62,3 @@ impl Solution for Day2Solution {
         Ok((horizontal * depth).to_string())
     }
 }
-

@@ -46,4 +46,3 @@ fn read_ints(input: &mut dyn BufRead) -> Vec<i32> {
         .map(|line| line.unwrap().parse::<i32>().unwrap())
         .collect()
 }
-

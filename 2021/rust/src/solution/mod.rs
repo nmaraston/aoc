@@ -5,6 +5,7 @@ mod day4;
 mod day5;
 mod day6;
 mod day7;
+mod day8;
 
 use std::io::BufRead;
 
@@ -22,6 +23,7 @@ pub fn get_solution(day: u32) -> Box<dyn Solution> {
         5 => Box::new(day5::Day5Solution { }),
         6 => Box::new(day6::Day6Solution { }),
         7 => Box::new(day7::Day7Solution { }),
+        8 => Box::new(day8::Day8Solution { }),
         _ => panic!("No solution implemented for given day {}", day),
     }
 }

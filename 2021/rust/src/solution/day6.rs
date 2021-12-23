@@ -52,4 +52,3 @@ fn read_ints(input: &mut dyn BufRead) -> std::io::Result<Vec<u16>> {
           .map(|s| s.trim_end().parse::<u16>().unwrap())
           .collect())
 }
-

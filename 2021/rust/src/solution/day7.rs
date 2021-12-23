@@ -10,7 +10,6 @@ impl Solution for Day7Solution {
         let ints = read_ints(input)?;
         let f = |pos: i16, int: i16| (pos - int).abs() as u32;
         Ok(find_position(ints, f).to_string())
-        
     }
 
     fn part_2(&self, input: &mut dyn BufRead) -> std::io::Result<String> {
