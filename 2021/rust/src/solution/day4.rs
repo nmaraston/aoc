@@ -4,21 +4,19 @@ use super::Solution;
 
 #[derive(Debug)]
 struct Board {
-    cells: Vec<(u32, bool)>
+    cells: Vec<(u32, bool)>,
 }
 
 impl Board {
     // Read 5 lines from the given line iterator to decode the board.
     fn from_read(lines: &mut Lines<&mut dyn BufRead>) -> std::io::Result<Board> {
         let mut cells = Vec::with_capacity(25);
-        lines
-            .take(5)
-            .for_each(|line| {
-                line.unwrap()
-                    .split_whitespace()
-                    .map(|s| s.parse::<u32>().unwrap())
-                    .for_each(|i| cells.push((i, false)))
-            });
+        lines.take(5).for_each(|line| {
+            line.unwrap()
+                .split_whitespace()
+                .map(|s| s.parse::<u32>().unwrap())
+                .for_each(|i| cells.push((i, false)))
+        });
 
         Ok(Board { cells })
     }
@@ -34,15 +32,14 @@ impl Board {
 
     // check if a cell is marked
     fn is_cell_marked(&self, row: usize, col: usize) -> bool {
-        self.cells[row*5 + col].1
+        self.cells[row * 5 + col].1
     }
-
 
     // check if board is in a winning state
     fn is_winner(&self) -> bool {
         for i in 0..5 {
             if self.is_row_winner(i) || self.is_col_winner(i) {
-                return true
+                return true;
             }
         }
         false
@@ -77,10 +74,9 @@ impl Board {
     }
 }
 
-pub struct Day4Solution { }
+pub struct Day4Solution {}
 
 impl Solution for Day4Solution {
-
     fn part_1(&self, input: &mut dyn BufRead) -> std::io::Result<String> {
         let (numbers, mut boards) = load_numbers_and_boards(input)?;
 
@@ -90,9 +86,8 @@ impl Solution for Day4Solution {
                 board.mark(number);
                 if board.is_winner() {
                     let score = board.score() * number;
-                    return Ok(score.to_string())
+                    return Ok(score.to_string());
                 }
-
             }
         }
 
@@ -104,10 +99,7 @@ impl Solution for Day4Solution {
         let (numbers, boards) = load_numbers_and_boards(input)?;
 
         // Use tuples of (Board, bool) where the bool flags if the board is in a winning state
-        let mut boards: Vec<(Board, bool)> = boards
-            .into_iter()
-            .map(|b| (b, false))
-            .collect();
+        let mut boards: Vec<(Board, bool)> = boards.into_iter().map(|b| (b, false)).collect();
 
         // Play bingo. Find last winning board
         let mut last_winning_score = 0;
@@ -127,10 +119,11 @@ impl Solution for Day4Solution {
     }
 }
 
-fn load_numbers_and_boards(input: &mut dyn BufRead)  -> std::io::Result<(Vec<u32>, Vec<Board>)> {
+fn load_numbers_and_boards(input: &mut dyn BufRead) -> std::io::Result<(Vec<u32>, Vec<Board>)> {
     let mut lines = input.lines().into_iter();
 
-    let numbers: Vec<u32> = lines.next()
+    let numbers: Vec<u32> = lines
+        .next()
         .unwrap()?
         .split(",")
         .map(|s| s.parse::<u32>().unwrap())

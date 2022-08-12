@@ -2,10 +2,9 @@ use std::io::BufRead;
 
 use super::Solution;
 
-pub struct Day7Solution { }
+pub struct Day7Solution {}
 
 impl Solution for Day7Solution {
-
     fn part_1(&self, input: &mut dyn BufRead) -> std::io::Result<String> {
         let ints = read_ints(input)?;
         let f = |pos: i16, int: i16| (pos - int).abs() as u32;
@@ -22,7 +21,7 @@ impl Solution for Day7Solution {
     }
 }
 
-fn find_position(ints: Vec<i16>, f: impl Fn(i16, i16) -> u32) -> u32 { 
+fn find_position(ints: Vec<i16>, f: impl Fn(i16, i16) -> u32) -> u32 {
     let max_int = ints.iter().max().unwrap();
 
     let mut min_total = std::u32::MAX;
@@ -41,9 +40,8 @@ fn find_position(ints: Vec<i16>, f: impl Fn(i16, i16) -> u32) -> u32 {
 fn read_ints(input: &mut dyn BufRead) -> std::io::Result<Vec<i16>> {
     let mut buf = String::new();
     input.read_line(&mut buf)?;
-    Ok(
-        buf
-          .split(",")
-          .map(|s| s.trim_end().parse::<i16>().unwrap())
-          .collect())
+    Ok(buf
+        .split(",")
+        .map(|s| s.trim_end().parse::<i16>().unwrap())
+        .collect())
 }

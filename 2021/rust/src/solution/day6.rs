@@ -1,11 +1,10 @@
-use std::{io::BufRead, collections::HashMap};
+use std::{collections::HashMap, io::BufRead};
 
 use super::Solution;
 
-pub struct Day6Solution { }
+pub struct Day6Solution {}
 
 impl Solution for Day6Solution {
-
     fn part_1(&self, input: &mut dyn BufRead) -> std::io::Result<String> {
         Ok(simulate_lanternfish(input, 80)?.to_string())
     }
@@ -36,7 +35,8 @@ fn simulate_single_lanternfish(age: u16, day: u16, cache: &mut HashMap<(u16, u16
         let res = if day == 0 || age >= day {
             1
         } else {
-            simulate_single_lanternfish(6, day - age - 1, cache) + simulate_single_lanternfish(8, day - age - 1, cache)
+            simulate_single_lanternfish(6, day - age - 1, cache)
+                + simulate_single_lanternfish(8, day - age - 1, cache)
         };
         cache.insert(key, res);
         res
@@ -46,9 +46,8 @@ fn simulate_single_lanternfish(age: u16, day: u16, cache: &mut HashMap<(u16, u16
 fn read_ints(input: &mut dyn BufRead) -> std::io::Result<Vec<u16>> {
     let mut buf = String::new();
     input.read_line(&mut buf)?;
-    Ok(
-        buf
-          .split(",")
-          .map(|s| s.trim_end().parse::<u16>().unwrap())
-          .collect())
+    Ok(buf
+        .split(",")
+        .map(|s| s.trim_end().parse::<u16>().unwrap())
+        .collect())
 }

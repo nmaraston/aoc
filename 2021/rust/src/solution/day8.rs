@@ -1,6 +1,6 @@
-use std::io::BufRead;
-use std::convert::TryInto;
 use std::collections::HashSet;
+use std::convert::TryInto;
+use std::io::BufRead;
 
 use super::Solution;
 
@@ -45,14 +45,10 @@ impl SignalPattern {
         let eight = remove_first(&mut signals, |s| s.len() == 7);
 
         // Six is the only string to contain 6 characters and not contain one
-        let six = remove_first(&mut signals, |s| {
-            s.len() == 6 && !one.is_subset(&s)
-        });
+        let six = remove_first(&mut signals, |s| s.len() == 6 && !one.is_subset(&s));
 
         // Five is the only remaining string to contain 5 characters and is a subset of six
-        let five = remove_first(&mut signals, |s| {
-            s.len() == 5 && s.is_subset(&six)
-        });
+        let five = remove_first(&mut signals, |s| s.len() == 5 && s.is_subset(&six));
 
         // Nine is the only remaining string to contain 6 characters with the cardinality of the
         // set difference between one being 1
@@ -65,9 +61,7 @@ impl SignalPattern {
 
         // Three is the only remaining string with the cardinality of the set difference between
         // one being 3
-        let three  = remove_first(&mut signals, |s| {
-            s.difference(&one).count() == 3
-        });
+        let three = remove_first(&mut signals, |s| s.difference(&one).count() == 3);
 
         // Only two remains
         let two = signals.remove(0);
@@ -82,32 +76,31 @@ impl SignalPattern {
             (six, 6),
             (seven, 7),
             (eight, 8),
-            (nine, 9)
+            (nine, 9),
         ]
     }
 }
 fn remove_first<T, F>(vec: &mut Vec<T>, predicate: F) -> T
 where
-  F: FnMut(&T) -> bool
+    F: FnMut(&T) -> bool,
 {
     // Unwrap here for convenience
     let index = vec.iter().position(predicate).unwrap();
     vec.remove(index)
 }
 
-pub struct Day8Solution { }
+pub struct Day8Solution {}
 
 impl Solution for Day8Solution {
-
     fn part_1(&self, input: &mut dyn BufRead) -> std::io::Result<String> {
         let signal_patterns: Vec<SignalPattern> = input
             .lines()
             .map(|line| SignalPattern::from(line.unwrap()))
             .collect();
-        
+
         let mut count = 0;
         for pattern in &signal_patterns {
-            for output in  &pattern.outputs {
+            for output in &pattern.outputs {
                 let len = output.len();
                 if len == 2 || len == 3 || len == 4 || len == 7 {
                     count += 1;

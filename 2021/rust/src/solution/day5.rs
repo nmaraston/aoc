@@ -22,7 +22,6 @@ fn get_u16_at(caps: &Captures, i: usize) -> i16 {
     c.map(|m| m.as_str().parse::<i16>()).unwrap().unwrap()
 }
 
-
 impl Line {
     fn from(line: &String) -> Line {
         lazy_static! {
@@ -90,12 +89,11 @@ impl Line {
             0
         }
     }
-} 
+}
 
-pub struct Day5Solution { }
+pub struct Day5Solution {}
 
 impl Solution for Day5Solution {
-
     fn part_1(&self, input: &mut dyn BufRead) -> std::io::Result<String> {
         let mut lines: Vec<Line> = Vec::new();
 
@@ -151,6 +149,6 @@ fn render_and_count(lines: &Vec<Line>, grid_cols: i16, grid_rows: i16) -> i32 {
             }
         }
     }
-    
+
     count
 }

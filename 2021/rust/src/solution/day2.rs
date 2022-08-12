@@ -2,10 +2,9 @@ use std::io::BufRead;
 
 use super::Solution;
 
-pub struct Day2Solution { }
+pub struct Day2Solution {}
 
 impl Solution for Day2Solution {
-
     fn part_1(&self, input: &mut dyn BufRead) -> std::io::Result<String> {
         let mut horizontal = 0;
         let mut depth = 0;
@@ -17,7 +16,7 @@ impl Solution for Day2Solution {
             if split.len() != 2 {
                 panic!("Expected line of form '(forward|up|down) [1-9]'");
             }
-            
+
             let command = split[0];
             let arg = split[1].parse::<i32>().unwrap();
 
@@ -44,7 +43,7 @@ impl Solution for Day2Solution {
             if split.len() != 2 {
                 panic!("Expected line of form '(forward|up|down) [1-9]'");
             }
-            
+
             let command = split[0];
             let arg = split[1].parse::<i32>().unwrap();
 
@@ -52,7 +51,7 @@ impl Solution for Day2Solution {
                 "forward" => {
                     horizontal += arg;
                     depth += aim * arg;
-                },
+                }
                 "up" => aim -= arg,
                 "down" => aim += arg,
                 _ => panic!("Unknown command '{}'", command),

@@ -1,9 +1,9 @@
 mod solution;
 
-use clap::{App, Arg, value_t};
+use clap::{value_t, App, Arg};
 
-use std::io::BufReader;
 use std::fs::File;
+use std::io::BufReader;
 
 fn main() -> std::io::Result<()> {
     let pkg_version = env!("CARGO_PKG_VERSION");
@@ -12,18 +12,9 @@ fn main() -> std::io::Result<()> {
     let matches = App::new("aoc")
         .version(pkg_version)
         .author(pkg_author)
-        .arg(
-            Arg::with_name("DAY")
-            .required(true)
-            .index(1))
-        .arg(
-            Arg::with_name("PART")
-            .required(true)
-            .index(2))
-        .arg(
-            Arg::with_name("INPUT_FILE")
-            .required(true)
-            .index(3))
+        .arg(Arg::with_name("DAY").required(true).index(1))
+        .arg(Arg::with_name("PART").required(true).index(2))
+        .arg(Arg::with_name("INPUT_FILE").required(true).index(3))
         .get_matches();
 
     // Unwraps are safe since all arguments are required
@@ -39,7 +30,10 @@ fn main() -> std::io::Result<()> {
     match part {
         1 => println!("{}", solution.part_1(&mut reader)?),
         2 => println!("{}", solution.part_2(&mut reader)?),
-        _ => panic!("Illegal part number specified '{}'. Must be '1' or '2'", part),
+        _ => panic!(
+            "Illegal part number specified '{}'. Must be '1' or '2'",
+            part
+        ),
     };
 
     Ok(())
