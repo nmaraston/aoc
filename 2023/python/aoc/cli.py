@@ -18,7 +18,7 @@ def run(day: int, part: int, input_file_path: str) -> None:
             case 1:
                 print(solution.part_1(input_file))
             case 2:
-                print(solution.part_1(input_file))
+                print(solution.part_2(input_file))
             case _:
                 raise ValueError(f"Illegal part number specified '{part}'. Must be '1' or '2'")
 
