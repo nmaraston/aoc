@@ -12,3 +12,5 @@
 **/scala/project/.bloop/
 
 **/rust/target/
+
+**/__pycache__/
