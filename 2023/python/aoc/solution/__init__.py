@@ -1,6 +1,7 @@
 from aoc.solution.day1 import Day1Solution
 from aoc.solution.day2 import Day2Solution
 from aoc.solution.day3 import Day3Solution
+from aoc.solution.day4 import Day4Solution
 
 
 def get_solution(day: int):
@@ -11,6 +12,8 @@ def get_solution(day: int):
             return Day2Solution()
         case 3:
             return Day3Solution()
+        case 4:
+            return Day4Solution()
         case _:
             raise ValueError(f"No solution implemented for given day {day}")
 
