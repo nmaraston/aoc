@@ -1,10 +1,10 @@
 mod day1;
 mod day2;
+mod day3;
 
 use std::io::BufRead;
 use std::num::ParseIntError;
 use thiserror::Error;
-
 
 #[derive(Error, Debug)]
 pub enum AocSolutionError {
@@ -14,15 +14,15 @@ pub enum AocSolutionError {
 
     // Represents cases where parsing the input file failed.
     #[error("failed to parse input file: {message:?}")]
-    ParseError {
-        message: String
-    }
+    ParseError { message: String },
 }
 
-impl From<ParseIntError> for AocSolutionError { 
-    fn from(err: ParseIntError) -> AocSolutionError { 
-        AocSolutionError::ParseError { message: format!("failed to parse int: {:?}", err) }
-    } 
+impl From<ParseIntError> for AocSolutionError {
+    fn from(err: ParseIntError) -> AocSolutionError {
+        AocSolutionError::ParseError {
+            message: format!("failed to parse int: {:?}", err),
+        }
+    }
 }
 
 pub trait Solution {
@@ -34,6 +34,7 @@ pub fn get_solution(day: u32) -> Box<dyn Solution> {
     match day {
         1 => Box::new(day1::Day1Solution {}),
         2 => Box::new(day2::Day2Solution {}),
+        3 => Box::new(day3::Day3Solution {}),
         _ => panic!("No solution implemented for given day {}", day),
     }
 }
