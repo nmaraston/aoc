@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 use std::io::BufRead;
 
-use super::Solution;
+use super::{AocSolutionError, Solution};
 
 pub struct Day1Solution {}
 
 impl Solution for Day1Solution {
-    fn part_1(&self, input: &mut dyn BufRead) -> std::io::Result<String> {
+    fn part_1(&self, input: &mut dyn BufRead) -> Result<String, AocSolutionError> {
         let mut col1_nums = Vec::new();
         let mut col2_nums = Vec::new();
 
@@ -14,8 +14,8 @@ impl Solution for Day1Solution {
             let line = line?;
             let mut line_split = line.split("   ");
 
-            let n1 = line_split.next().unwrap().parse::<i32>().unwrap();
-            let n2 = line_split.next().unwrap().parse::<i32>().unwrap();
+            let n1 = line_split.next().unwrap().parse::<i32>()?;
+            let n2 = line_split.next().unwrap().parse::<i32>()?;
 
             col1_nums.push(n1);
             col2_nums.push(n2);
@@ -32,7 +32,7 @@ impl Solution for Day1Solution {
         Ok(sum.to_string())
     }
 
-    fn part_2(&self, input: &mut dyn BufRead) -> std::io::Result<String> {
+    fn part_2(&self, input: &mut dyn BufRead) -> Result<String, AocSolutionError> {
         let mut col1_nums = Vec::new();
         let mut col2_freqs = HashMap::new();
 
@@ -40,8 +40,8 @@ impl Solution for Day1Solution {
             let line = line?;
             let mut line_split = line.split("   ");
 
-            let n1 = line_split.next().unwrap().parse::<i32>().unwrap();
-            let n2 = line_split.next().unwrap().parse::<i32>().unwrap();
+            let n1 = line_split.next().unwrap().parse::<i32>()?;
+            let n2 = line_split.next().unwrap().parse::<i32>()?;
 
             col1_nums.push(n1);
             *col2_freqs.entry(n2).or_insert(0) += 1

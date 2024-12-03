@@ -1,18 +1,18 @@
-use std::io::BufRead;
+use std::{io::BufRead, num::ParseIntError};
 
-use super::Solution;
+use super::{AocSolutionError, Solution};
 
 pub struct Day2Solution {}
 
 impl Solution for Day2Solution {
-    fn part_1(&self, input: &mut dyn BufRead) -> std::io::Result<String> {
+    fn part_1(&self, input: &mut dyn BufRead) -> Result<String, AocSolutionError> {
         let mut count = 0;
         for line in input.lines() {
             let line = line?;
             let nums: Vec<i32> = line
                 .split_whitespace()
-                .map(|n| n.parse::<i32>().unwrap())
-                .collect();
+                .map(|n| n.parse::<i32>())
+                .collect::<Result<Vec<i32>, ParseIntError>>()?;
 
             if is_safe(&nums) {
                 count += 1
@@ -22,14 +22,14 @@ impl Solution for Day2Solution {
         Ok(count.to_string())
     }
 
-    fn part_2(&self, input: &mut dyn BufRead) -> std::io::Result<String> {
+    fn part_2(&self, input: &mut dyn BufRead) -> Result<String, AocSolutionError> {
         let mut count = 0;
         for line in input.lines() {
             let line = line?;
-            let mut nums: Vec<i32> = line
+            let nums: Vec<i32> = line
                 .split_whitespace()
-                .map(|n| n.parse::<i32>().unwrap())
-                .collect();
+                .map(|n| n.parse::<i32>())
+                .collect::<Result<Vec<i32>, ParseIntError>>()?;
 
             if is_safe(&nums) {
                 count += 1
@@ -49,7 +49,7 @@ impl Solution for Day2Solution {
     }
 }
 
-fn is_safe(nums: &Vec<i32>) -> bool {
+fn is_safe(nums: &[i32]) -> bool {
     let mut safe_increasing = true;
     let mut safe_decreasing = true;
 

@@ -1,5 +1,6 @@
 mod solution;
 
+use std::error::Error;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::PathBuf;
@@ -19,7 +20,7 @@ struct Cli {
     input_file: PathBuf,
 }
 
-fn main() -> std::io::Result<()> {
+fn main() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
 
     let solution = solution::get_solution(cli.day);
