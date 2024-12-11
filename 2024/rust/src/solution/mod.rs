@@ -1,6 +1,7 @@
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 
 use std::io::BufRead;
 use std::num::ParseIntError;
@@ -35,6 +36,7 @@ pub fn get_solution(day: u32) -> Box<dyn Solution> {
         1 => Box::new(day1::Day1Solution {}),
         2 => Box::new(day2::Day2Solution {}),
         3 => Box::new(day3::Day3Solution {}),
+        4 => Box::new(day4::Day4Solution {}),
         _ => panic!("No solution implemented for given day {}", day),
     }
 }
