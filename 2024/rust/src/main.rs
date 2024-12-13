@@ -1,4 +1,5 @@
 mod solution;
+mod util;
 
 use std::error::Error;
 use std::fs::File;

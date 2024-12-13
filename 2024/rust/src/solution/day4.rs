@@ -1,13 +1,15 @@
 use std::collections::HashSet;
 use std::io::BufRead;
 
+use crate::util::CharMatrix;
+
 use super::{AocSolutionError, Solution};
 
 pub struct Day4Solution {}
 
 impl Solution for Day4Solution {
     fn part_1(&self, input: &mut dyn BufRead) -> Result<String, AocSolutionError> {
-        let matrix = Matrix::new(input)?;
+        let matrix = CharMatrix::from_input(input)?;
 
         let mut count = 0;
         let word = ['X', 'M', 'A', 'S'];
@@ -21,7 +23,7 @@ impl Solution for Day4Solution {
     }
 
     fn part_2(&self, input: &mut dyn BufRead) -> Result<String, AocSolutionError> {
-        let matrix = Matrix::new(input)?;
+        let matrix = CharMatrix::from_input(input)?;
 
         let m_s_set = HashSet::from(['M', 'S']);
         let mut count = 0;
@@ -44,53 +46,6 @@ impl Solution for Day4Solution {
     }
 }
 
-struct Matrix {
-    pub num_cols: usize,
-    pub num_rows: usize,
-    cells: Vec<char>,
-}
-
-impl Matrix {
-    pub fn new(input: &mut dyn BufRead) -> Result<Matrix, AocSolutionError> {
-        let mut cells = Vec::new();
-        let mut num_cols = 0;
-        let mut num_rows = 0;
-        for line in input.lines() {
-            let line = line?;
-            num_rows += 1;
-            num_cols = 0;
-
-            for c in line.chars() {
-                cells.push(c);
-                num_cols += 1;
-            }
-        }
-
-        Ok(Matrix {
-            num_cols,
-            num_rows,
-            cells,
-        })
-    }
-
-    pub fn get(&self, row: usize, col: usize) -> char {
-        if row >= self.num_rows {
-            panic!(
-                "illegal row index '{}' >= num_rows='{}'",
-                row, self.num_rows
-            )
-        }
-        if col >= self.num_cols {
-            panic!(
-                "illegal col index '{}' >= num_cols='{}'",
-                col, self.num_cols
-            )
-        }
-
-        self.cells[self.num_rows * row + col]
-    }
-}
-
 enum Direction {
     Left,
     Right,
@@ -102,7 +57,7 @@ enum Direction {
     LowerRight,
 }
 
-fn word_search(matrix: &Matrix, row: usize, col: usize, word: &[char]) -> u32 {
+fn word_search(matrix: &CharMatrix, row: usize, col: usize, word: &[char]) -> u32 {
     let mut count = 0;
     count += word_search_helper(matrix, row, col, word, 0, Direction::Left);
     count += word_search_helper(matrix, row, col, word, 0, Direction::Right);
@@ -116,7 +71,7 @@ fn word_search(matrix: &Matrix, row: usize, col: usize, word: &[char]) -> u32 {
 }
 
 fn word_search_helper(
-    matrix: &Matrix,
+    matrix: &CharMatrix,
     mut row: usize,
     mut col: usize,
     word: &[char],

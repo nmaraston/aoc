@@ -12,7 +12,7 @@ impl Solution for Day5Solution {
         for line in input.lines() {
             let line = line?;
 
-            if line == "" {
+            if line.is_empty() {
                 break;
             }
 
@@ -37,13 +37,11 @@ impl Solution for Day5Solution {
             for i in 0..nums.len() {
                 if i == nums.len() - 1 {
                     sum += nums[nums.len() / 2];
-                } else {
-                    if let Some(deps) = map.get(&nums[i]) {
-                        let mut remaining_set: HashSet<u32> = HashSet::new();
-                        remaining_set.extend(&nums[i..]);
-                        if !deps.is_disjoint(&remaining_set) {
-                            break;
-                        }
+                } else if let Some(deps) = map.get(&nums[i]) {
+                    let mut remaining_set: HashSet<u32> = HashSet::new();
+                    remaining_set.extend(&nums[i..]);
+                    if !deps.is_disjoint(&remaining_set) {
+                        break;
                     }
                 }
             }
