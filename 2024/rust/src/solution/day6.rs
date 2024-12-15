@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::io::BufRead;
 
 use super::{AocSolutionError, Solution};
-use crate::util::{CharMatrix, Coord};
+use crate::util::{uCoord, CharMatrix};
 
 pub struct Day6Solution {}
 
@@ -22,7 +22,7 @@ impl Solution for Day6Solution {
         // We only need to test for cycles by adding obstuctions to the expected
         // path of the guard.
         let visited = compute_visited_set(&matrix, start_guard);
-        for Coord { row, col } in visited {
+        for uCoord { row, col } in visited {
             // Can't add an obstruction to the guards starting position
             if row == start_guard.coord.row && col == start_guard.coord.col {
                 continue;
@@ -68,7 +68,7 @@ enum Direction {
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 struct Guard {
-    pub coord: Coord,
+    pub coord: uCoord,
     pub direction: Direction,
 }
 
@@ -82,34 +82,34 @@ impl Guard {
         };
     }
 
-    pub fn next_move(&self, matrix: &CharMatrix) -> Option<Coord> {
+    pub fn next_move(&self, matrix: &CharMatrix) -> Option<uCoord> {
         match self.direction {
             Direction::Left => {
                 if self.coord.col == 0 {
                     None
                 } else {
-                    Some(self.coord - Coord { row: 0, col: 1 })
+                    Some(self.coord - uCoord { row: 0, col: 1 })
                 }
             }
             Direction::Right => {
                 if self.coord.col == matrix.num_cols - 1 {
                     None
                 } else {
-                    Some(self.coord + Coord { row: 0, col: 1 })
+                    Some(self.coord + uCoord { row: 0, col: 1 })
                 }
             }
             Direction::Up => {
                 if self.coord.row == 0 {
                     None
                 } else {
-                    Some(self.coord - Coord { row: 1, col: 0 })
+                    Some(self.coord - uCoord { row: 1, col: 0 })
                 }
             }
             Direction::Down => {
                 if self.coord.row == matrix.num_rows - 1 {
                     None
                 } else {
-                    Some(self.coord + Coord { row: 1, col: 0 })
+                    Some(self.coord + uCoord { row: 1, col: 0 })
                 }
             }
         }
@@ -122,25 +122,25 @@ fn find_guard(matrix: &CharMatrix) -> Guard {
             match matrix.get(row, col) {
                 '>' => {
                     return Guard {
-                        coord: Coord { row, col },
+                        coord: uCoord { row, col },
                         direction: Direction::Left,
                     }
                 }
                 '<' => {
                     return Guard {
-                        coord: Coord { row, col },
+                        coord: uCoord { row, col },
                         direction: Direction::Right,
                     }
                 }
                 '^' => {
                     return Guard {
-                        coord: Coord { row, col },
+                        coord: uCoord { row, col },
                         direction: Direction::Up,
                     }
                 }
                 'V' => {
                     return Guard {
-                        coord: Coord { row, col },
+                        coord: uCoord { row, col },
                         direction: Direction::Down,
                     }
                 }
@@ -152,7 +152,7 @@ fn find_guard(matrix: &CharMatrix) -> Guard {
     panic!("No guard found in input!");
 }
 
-fn compute_visited_set(matrix: &CharMatrix, mut guard: Guard) -> HashSet<Coord> {
+fn compute_visited_set(matrix: &CharMatrix, mut guard: Guard) -> HashSet<uCoord> {
     let mut visited = HashSet::new();
     visited.insert(guard.coord);
 
