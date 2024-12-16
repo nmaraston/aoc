@@ -2,40 +2,40 @@ use std::collections::HashSet;
 use std::io::BufRead;
 
 use super::{AocSolutionError, Solution};
-use crate::util::{uCoord, CharMatrix};
+use crate::util::{parse_char_grid, CharGrid, UCoord};
 
 pub struct Day6Solution {}
 
 impl Solution for Day6Solution {
     fn part_1(&self, input: &mut dyn BufRead) -> Result<String, AocSolutionError> {
-        let matrix = CharMatrix::from_input(input)?;
-        let guard = find_guard(&matrix);
+        let grid = parse_char_grid(input)?;
+        let guard = find_guard(&grid);
 
-        Ok(compute_visited_set(&matrix, guard).len().to_string())
+        Ok(compute_visited_set(&grid, guard).len().to_string())
     }
 
     fn part_2(&self, input: &mut dyn BufRead) -> Result<String, AocSolutionError> {
-        let mut matrix = CharMatrix::from_input(input)?;
-        let start_guard = find_guard(&matrix);
+        let mut grid = parse_char_grid(input)?;
+        let start_guard = find_guard(&grid);
         let mut count = 0;
 
         // We only need to test for cycles by adding obstuctions to the expected
         // path of the guard.
-        let visited = compute_visited_set(&matrix, start_guard);
-        for uCoord { row, col } in visited {
+        let visited = compute_visited_set(&grid, start_guard);
+        for UCoord { row, col } in visited {
             // Can't add an obstruction to the guards starting position
             if row == start_guard.coord.row && col == start_guard.coord.col {
                 continue;
             }
 
             // Add obstruction
-            matrix.set(row, col, '#');
+            grid.set(row, col, '#');
 
             let mut visited_obstructions: HashSet<Guard> = HashSet::new();
             let mut cur_guard = start_guard;
 
-            while let Some(next) = cur_guard.next_move(&matrix) {
-                if matrix.get(next.row, next.col) == '#' {
+            while let Some(next) = cur_guard.next_move(&grid) {
+                if grid.get(next.row, next.col) == '#' {
                     // A cycle occurs when the guard visits the same
                     // obstruction twice with the same orientation.
                     if visited_obstructions.contains(&cur_guard) {
@@ -51,7 +51,7 @@ impl Solution for Day6Solution {
             }
 
             // Remove obstruction
-            matrix.set(row, col, '.');
+            grid.set(row, col, '.');
         }
 
         Ok(count.to_string())
@@ -68,7 +68,7 @@ enum Direction {
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 struct Guard {
-    pub coord: uCoord,
+    pub coord: UCoord,
     pub direction: Direction,
 }
 
@@ -82,65 +82,65 @@ impl Guard {
         };
     }
 
-    pub fn next_move(&self, matrix: &CharMatrix) -> Option<uCoord> {
+    pub fn next_move(&self, grid: &CharGrid) -> Option<UCoord> {
         match self.direction {
             Direction::Left => {
                 if self.coord.col == 0 {
                     None
                 } else {
-                    Some(self.coord - uCoord { row: 0, col: 1 })
+                    Some(self.coord - UCoord { row: 0, col: 1 })
                 }
             }
             Direction::Right => {
-                if self.coord.col == matrix.num_cols - 1 {
+                if self.coord.col == grid.num_cols - 1 {
                     None
                 } else {
-                    Some(self.coord + uCoord { row: 0, col: 1 })
+                    Some(self.coord + UCoord { row: 0, col: 1 })
                 }
             }
             Direction::Up => {
                 if self.coord.row == 0 {
                     None
                 } else {
-                    Some(self.coord - uCoord { row: 1, col: 0 })
+                    Some(self.coord - UCoord { row: 1, col: 0 })
                 }
             }
             Direction::Down => {
-                if self.coord.row == matrix.num_rows - 1 {
+                if self.coord.row == grid.num_rows - 1 {
                     None
                 } else {
-                    Some(self.coord + uCoord { row: 1, col: 0 })
+                    Some(self.coord + UCoord { row: 1, col: 0 })
                 }
             }
         }
     }
 }
 
-fn find_guard(matrix: &CharMatrix) -> Guard {
-    for row in 0..matrix.num_rows {
-        for col in 0..matrix.num_cols {
-            match matrix.get(row, col) {
+fn find_guard(grid: &CharGrid) -> Guard {
+    for row in 0..grid.num_rows {
+        for col in 0..grid.num_cols {
+            match grid.get(row, col) {
                 '>' => {
                     return Guard {
-                        coord: uCoord { row, col },
+                        coord: UCoord { row, col },
                         direction: Direction::Left,
                     }
                 }
                 '<' => {
                     return Guard {
-                        coord: uCoord { row, col },
+                        coord: UCoord { row, col },
                         direction: Direction::Right,
                     }
                 }
                 '^' => {
                     return Guard {
-                        coord: uCoord { row, col },
+                        coord: UCoord { row, col },
                         direction: Direction::Up,
                     }
                 }
                 'V' => {
                     return Guard {
-                        coord: uCoord { row, col },
+                        coord: UCoord { row, col },
                         direction: Direction::Down,
                     }
                 }
@@ -152,12 +152,12 @@ fn find_guard(matrix: &CharMatrix) -> Guard {
     panic!("No guard found in input!");
 }
 
-fn compute_visited_set(matrix: &CharMatrix, mut guard: Guard) -> HashSet<uCoord> {
+fn compute_visited_set(grid: &CharGrid, mut guard: Guard) -> HashSet<UCoord> {
     let mut visited = HashSet::new();
     visited.insert(guard.coord);
 
-    while let Some(next) = guard.next_move(matrix) {
-        if matrix.get(next.row, next.col) == '#' {
+    while let Some(next) = guard.next_move(grid) {
+        if grid.get(next.row, next.col) == '#' {
             guard.turn();
         } else {
             visited.insert(next);

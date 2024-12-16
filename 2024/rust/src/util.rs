@@ -8,6 +8,9 @@ pub struct Coord<T> {
     pub col: T,
 }
 
+pub type UCoord = Coord<usize>;
+pub type ICoord = Coord<i32>;
+
 impl<T> Add for Coord<T>
 where
     T: Add<Output = T>,
@@ -55,44 +58,25 @@ impl Into<Coord<i32>> for Coord<usize> {
     }
 }
 
-pub type uCoord = Coord<usize>;
-pub type iCoord = Coord<i32>;
-
-pub struct CharMatrix {
+pub struct Grid<T> {
     pub num_rows: usize,
     pub num_cols: usize,
-    cells: Vec<char>,
+    cells: Vec<T>,
 }
 
-impl CharMatrix {
-    pub fn new(rows: usize, cols: usize, default_char: char) -> CharMatrix {
-        CharMatrix {
+pub type CharGrid = Grid<char>;
+pub type IntGrid = Grid<u32>;
+
+impl<T> Grid<T>
+where
+    T: Clone + Copy,
+{
+    pub fn new(rows: usize, cols: usize, default: T) -> Grid<T> {
+        Grid {
             num_rows: rows,
             num_cols: cols,
-            cells: vec![default_char; rows * cols],
+            cells: vec![default; rows * cols],
         }
-    }
-
-    pub fn from_input(input: &mut dyn BufRead) -> Result<CharMatrix, std::io::Error> {
-        let mut cells = Vec::new();
-        let mut num_cols = 0;
-        let mut num_rows = 0;
-        for line in input.lines() {
-            let line = line?;
-            num_rows += 1;
-            num_cols = 0;
-
-            for c in line.chars() {
-                cells.push(c);
-                num_cols += 1;
-            }
-        }
-
-        Ok(CharMatrix {
-            num_cols,
-            num_rows,
-            cells,
-        })
     }
 
     fn assert_indicies(&self, row: usize, col: usize) {
@@ -110,18 +94,100 @@ impl CharMatrix {
         );
     }
 
-    pub fn get(&self, row: usize, col: usize) -> char {
+    pub fn get(&self, row: usize, col: usize) -> T {
         self.assert_indicies(row, col);
         self.cells[self.num_rows * row + col]
     }
 
-    pub fn set(&mut self, row: usize, col: usize, val: char) {
+    pub fn at_coord(&self, coord: UCoord) -> T {
+        self.get(coord.row, coord.col)
+    }
+
+    pub fn set(&mut self, row: usize, col: usize, val: T) {
         self.assert_indicies(row, col);
         self.cells[self.num_rows * row + col] = val;
     }
+
+    pub fn manhattan_neighbours(&self, coord: UCoord) -> Vec<UCoord> {
+        let mut neighbours = Vec::new();
+
+        if coord.row > 0 {
+            neighbours.push(UCoord {
+                row: coord.row - 1,
+                col: coord.col,
+            });
+        }
+        if coord.row < self.num_rows - 1 {
+            neighbours.push(UCoord {
+                row: coord.row + 1,
+                col: coord.col,
+            });
+        }
+        if coord.col > 0 {
+            neighbours.push(UCoord {
+                row: coord.row,
+                col: coord.col - 1,
+            });
+        }
+        if coord.col < self.num_cols - 1 {
+            neighbours.push(UCoord {
+                row: coord.row,
+                col: coord.col + 1,
+            });
+        }
+
+        neighbours
+    }
 }
 
-impl fmt::Display for CharMatrix {
+pub fn parse_char_grid(input: &mut dyn BufRead) -> Result<CharGrid, std::io::Error> {
+    let mut cells = Vec::new();
+    let mut num_cols = 0;
+    let mut num_rows = 0;
+    for line in input.lines() {
+        let line = line?;
+        num_rows += 1;
+        num_cols = 0;
+
+        for c in line.chars() {
+            cells.push(c);
+            num_cols += 1;
+        }
+    }
+
+    Ok(Grid {
+        num_cols,
+        num_rows,
+        cells,
+    })
+}
+
+pub fn parse_int_grid(input: &mut dyn BufRead) -> Result<IntGrid, std::io::Error> {
+    let mut cells = Vec::new();
+    let mut num_cols = 0;
+    let mut num_rows = 0;
+    for line in input.lines() {
+        let line = line?;
+        num_rows += 1;
+        num_cols = 0;
+
+        for c in line.chars() {
+            cells.push(c.to_digit(10).unwrap());
+            num_cols += 1;
+        }
+    }
+
+    Ok(Grid {
+        num_cols,
+        num_rows,
+        cells,
+    })
+}
+
+impl<T> fmt::Display for Grid<T>
+where
+    T: Clone + Copy + fmt::Display,
+{
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for row in 0..self.num_rows {
             for col in 0..self.num_cols {
@@ -137,33 +203,39 @@ impl fmt::Display for CharMatrix {
     }
 }
 
-pub struct CharMatrixIterator<'a> {
-    matrix: &'a CharMatrix,
+pub struct GridIterator<'a, T> {
+    grid: &'a Grid<T>,
     index: usize,
 }
 
-impl<'a> IntoIterator for &'a CharMatrix {
-    type Item = (Coord<usize>, char);
-    type IntoIter = CharMatrixIterator<'a>;
+impl<'a, T> IntoIterator for &'a Grid<T>
+where
+    T: Clone + Copy,
+{
+    type Item = (UCoord, T);
+    type IntoIter = GridIterator<'a, T>;
 
     fn into_iter(self) -> Self::IntoIter {
-        CharMatrixIterator {
-            matrix: self,
+        GridIterator {
+            grid: self,
             index: 0,
         }
     }
 }
 
-impl<'a> Iterator for CharMatrixIterator<'a> {
-    type Item = (Coord<usize>, char);
+impl<'a, T> Iterator for GridIterator<'a, T>
+where
+    T: Clone + Copy,
+{
+    type Item = (UCoord, T);
 
-    fn next(&mut self) -> Option<(Coord<usize>, char)> {
-        if self.index >= self.matrix.cells.len() {
+    fn next(&mut self) -> Option<(UCoord, T)> {
+        if self.index >= self.grid.cells.len() {
             None
         } else {
-            let val = self.matrix.cells[self.index];
-            let row = self.index / self.matrix.num_rows;
-            let col = self.index % self.matrix.num_cols;
+            let val = self.grid.cells[self.index];
+            let row = self.index / self.grid.num_rows;
+            let col = self.index % self.grid.num_cols;
 
             self.index += 1;
             Some((Coord { row, col }, val))
