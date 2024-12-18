@@ -58,6 +58,20 @@ impl Into<Coord<i32>> for Coord<usize> {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+pub enum Direction {
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN,
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+pub struct Cell<T> {
+    pub val: T,
+    pub coord: UCoord,
+}
+
 pub struct Grid<T> {
     pub num_rows: usize,
     pub num_cols: usize,
@@ -137,6 +151,67 @@ where
         }
 
         neighbours
+    }
+
+    pub fn at_direction(&self, coord: UCoord, direction: Direction) -> Option<Cell<T>> {
+        match (direction) {
+            Direction::UP => {
+                if coord.row == 0 {
+                    None
+                } else {
+                    let res_coord = UCoord {
+                        row: coord.row - 1,
+                        col: coord.col,
+                    };
+                    Some(Cell {
+                        coord: res_coord,
+                        val: self.at_coord(res_coord),
+                    })
+                }
+            }
+            Direction::DOWN => {
+                if coord.row == self.num_rows - 1 {
+                    None
+                } else {
+                    let res_coord = UCoord {
+                        row: coord.row + 1,
+                        col: coord.col,
+                    };
+                    Some(Cell {
+                        coord: res_coord,
+                        val: self.at_coord(res_coord),
+                    })
+                }
+            }
+            Direction::LEFT => {
+                if coord.col == 0 {
+                    None
+                } else {
+                    let res_coord = UCoord {
+                        row: coord.row,
+                        col: coord.col - 1,
+                    };
+                    Some(Cell {
+                        coord: res_coord,
+                        val: self.at_coord(res_coord),
+                    })
+                }
+            }
+            Direction::RIGHT => {
+                if coord.col == self.num_cols - 1 {
+                    None
+                } else {
+                    let res_coord = UCoord {
+                        row: coord.row,
+                        col: coord.col + 1,
+                    };
+                    Some(Cell {
+                        coord: res_coord,
+                        val: self.at_coord(res_coord),
+                    })
+                }
+            }
+        }
     }
 }
 
