@@ -68,8 +68,8 @@ impl Solution for Day8Solution {
                         anitnode_coords.insert(antinode2);
                     }
 
-                    antinode1 += (icoord2 - icoord1);
-                    antinode2 += (icoord1 - icoord2);
+                    antinode1 += icoord2 - icoord1;
+                    antinode2 += icoord1 - icoord2;
                 }
             }
         }

@@ -67,7 +67,7 @@ impl Solution for Day9Solution {
                     }
 
                     free_node.index += file_node.size;
-                    free_node.size = free_node.size - file_node.size;
+                    free_node.size -= file_node.size;
                     break;
                 }
             }
@@ -82,7 +82,7 @@ struct INode {
     size: usize,
 }
 
-fn load_disk_map(input: &String) -> (Vec<i64>, Vec<INode>, Vec<INode>) {
+fn load_disk_map(input: &str) -> (Vec<i64>, Vec<INode>, Vec<INode>) {
     let mut disk_blocks = Vec::new();
     let mut file_blocks = Vec::new();
     let mut free_blocks = Vec::new();
@@ -111,9 +111,9 @@ fn load_disk_map(input: &String) -> (Vec<i64>, Vec<INode>, Vec<INode>) {
     (disk_blocks, file_blocks, free_blocks)
 }
 
-fn checksum(disk_map: &Vec<i64>) -> i64 {
+fn checksum(disk_map: &[i64]) -> i64 {
     disk_map
-        .into_iter()
+        .iter()
         .enumerate()
         .map(|(i, n)| (i as i64) * (*n).max(0))
         .sum()

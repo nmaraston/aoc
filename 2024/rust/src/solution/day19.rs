@@ -14,7 +14,7 @@ impl Solution for Day19Solution {
         line_iter.next();
 
         let mut count = 0;
-        while let Some(line) = line_iter.next() {
+        for line in line_iter {
             let line = line?;
             if search(&line, "", &patterns) {
                 count += 1;
@@ -34,8 +34,7 @@ impl Solution for Day19Solution {
         line_iter.next();
 
         let mut sum = 0;
-        while let Some(line) = line_iter.next() {
-            println!("{:?}", sum);
+        for line in line_iter {
             let line = line?;
             sum += count(&line, "", &patterns);
         }

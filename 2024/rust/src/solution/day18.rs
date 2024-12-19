@@ -20,7 +20,7 @@ impl Solution for Day18Solution {
     fn part_1(&self, input: &mut dyn BufRead) -> Result<String, AocSolutionError> {
         let mut grid = CharGrid::new(MAX_COORD + 1, MAX_COORD + 1, '.');
 
-        let mut line_iter = input.lines().into_iter();
+        let mut line_iter = input.lines();
         for _ in 0..FALLEN_BYTES {
             let line = line_iter.next().unwrap()?;
             let coord = read_coord(line)?;
@@ -39,11 +39,9 @@ impl Solution for Day18Solution {
             let coord = read_coord(line)?;
             grid.set(coord.row, coord.col, '#');
 
-            if byte_num >= FALLEN_BYTES {
-                if shortest_path(&grid, START, EXIT) == std::u32::MAX {
-                    res = coord;
-                    break;
-                }
+            if byte_num >= FALLEN_BYTES && shortest_path(&grid, START, EXIT) == u32::MAX {
+                res = coord;
+                break;
             }
         }
 
@@ -65,7 +63,7 @@ fn read_coord(line: String) -> Result<UCoord, AocSolutionError> {
 
 fn shortest_path(grid: &CharGrid, start: UCoord, end: UCoord) -> u32 {
     let mut visited = HashSet::new();
-    let mut dist_grid = IntGrid::new(grid.num_rows, grid.num_cols, std::u32::MAX);
+    let mut dist_grid = IntGrid::new(grid.num_rows, grid.num_cols, u32::MAX);
 
     let mut queue = VecDeque::new();
     queue.push_back((start, 0));

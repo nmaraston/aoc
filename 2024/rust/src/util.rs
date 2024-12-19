@@ -49,21 +49,21 @@ where
     }
 }
 
-impl Into<Coord<i32>> for Coord<usize> {
-    fn into(self) -> Coord<i32> {
+impl From<Coord<usize>> for Coord<i32> {
+    fn from(val: Coord<usize>) -> Self {
         Coord {
-            row: self.row as i32,
-            col: self.col as i32,
+            row: val.row as i32,
+            col: val.col as i32,
         }
     }
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum Direction {
-    LEFT,
-    RIGHT,
-    UP,
-    DOWN,
+    Left,
+    Right,
+    Up,
+    Down,
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -154,8 +154,8 @@ where
     }
 
     pub fn at_direction(&self, coord: UCoord, direction: Direction) -> Option<Cell<T>> {
-        match (direction) {
-            Direction::UP => {
+        match direction {
+            Direction::Up => {
                 if coord.row == 0 {
                     None
                 } else {
@@ -169,7 +169,7 @@ where
                     })
                 }
             }
-            Direction::DOWN => {
+            Direction::Down => {
                 if coord.row == self.num_rows - 1 {
                     None
                 } else {
@@ -183,7 +183,7 @@ where
                     })
                 }
             }
-            Direction::LEFT => {
+            Direction::Left => {
                 if coord.col == 0 {
                     None
                 } else {
@@ -197,7 +197,7 @@ where
                     })
                 }
             }
-            Direction::RIGHT => {
+            Direction::Right => {
                 if coord.col == self.num_cols - 1 {
                     None
                 } else {

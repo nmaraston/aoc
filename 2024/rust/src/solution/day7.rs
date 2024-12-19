@@ -14,7 +14,7 @@ impl Solution for Day7Solution {
             res
         };
 
-        Ok(solve(input, &eval)?)
+        solve(input, &eval)
     }
 
     fn part_2(&self, input: &mut dyn BufRead) -> Result<String, AocSolutionError> {
@@ -26,7 +26,7 @@ impl Solution for Day7Solution {
             res
         };
 
-        Ok(solve(input, &eval)?)
+        solve(input, &eval)
     }
 }
 

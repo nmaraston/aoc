@@ -94,15 +94,15 @@ fn find_edges_helper(
             }
         };
 
-        discover_edge(Direction::UP);
-        discover_edge(Direction::DOWN);
-        discover_edge(Direction::LEFT);
-        discover_edge(Direction::RIGHT);
+        discover_edge(Direction::Up);
+        discover_edge(Direction::Down);
+        discover_edge(Direction::Left);
+        discover_edge(Direction::Right);
     }
 }
 
-fn count_sides(edges: &Vec<Edge>) -> u32 {
-    let mut sides: Vec<Vec<Edge>> = edges.into_iter().map(|e| vec![*e]).collect();
+fn count_sides(edges: &[Edge]) -> u32 {
+    let mut sides: Vec<Vec<Edge>> = edges.iter().map(|e| vec![*e]).collect();
 
     // Merge edge collections that contain adjacent edges until no more merges can be found.
     // Only merge one edge collection at a time otherwise manging indicies is difficult.
@@ -145,11 +145,11 @@ fn count_sides(edges: &Vec<Edge>) -> u32 {
 }
 
 fn same_side(e1: &Edge, e2: &Edge) -> bool {
-    let same_vertical_side = (e1.direction == Direction::LEFT || e1.direction == Direction::RIGHT)
+    let same_vertical_side = (e1.direction == Direction::Left || e1.direction == Direction::Right)
         && e1.direction == e2.direction
         && e1.coord.col == e2.coord.col
         && e1.coord.row.abs_diff(e2.coord.row) == 1;
-    let same_horizontal_side = (e1.direction == Direction::UP || e1.direction == Direction::DOWN)
+    let same_horizontal_side = (e1.direction == Direction::Up || e1.direction == Direction::Down)
         && e1.direction == e2.direction
         && e1.coord.row == e2.coord.row
         && e1.coord.col.abs_diff(e2.coord.col) == 1;

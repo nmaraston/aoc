@@ -56,7 +56,7 @@ fn is_safe(nums: &[i32]) -> bool {
     for i in 1..nums.len() {
         let diff = nums[i] - nums[i - 1];
 
-        if diff >= 0 || diff < -3 {
+        if !(-3..0).contains(&diff) {
             safe_decreasing = false;
         }
         if diff <= 0 || diff > 3 {
