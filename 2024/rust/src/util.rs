@@ -75,7 +75,7 @@ pub struct Cell<T> {
 pub struct Grid<T> {
     pub num_rows: usize,
     pub num_cols: usize,
-    cells: Vec<T>,
+    pub cells: Vec<T>,
 }
 
 pub type CharGrid = Grid<char>;
@@ -110,7 +110,7 @@ where
 
     pub fn get(&self, row: usize, col: usize) -> T {
         self.assert_indicies(row, col);
-        self.cells[self.num_rows * row + col]
+        self.cells[self.num_cols * row + col]
     }
 
     pub fn at_coord(&self, coord: UCoord) -> T {
@@ -119,7 +119,7 @@ where
 
     pub fn set(&mut self, row: usize, col: usize, val: T) {
         self.assert_indicies(row, col);
-        self.cells[self.num_rows * row + col] = val;
+        self.cells[self.num_cols * row + col] = val;
     }
 
     pub fn manhattan_neighbours(&self, coord: UCoord) -> Vec<UCoord> {
